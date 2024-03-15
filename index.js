@@ -18,8 +18,25 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-
-console.log(process.env.DB_User);
+// custom middleware
+const verifyToken = async (req, res, next) => {
+    const token = req.cookies?.token;
+    console.log('value of token in middleware:', token)
+    if (!token) {
+        return res.status(401).send({ message: 'not authorized' })
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+        // error
+        if (err) {
+            console.log(err);
+            return res.status(401).send({ message: 'unauthorized' })
+        }
+        // valid
+        console.log('value in the token:', decoded)
+        req.user = decoded;
+        next();
+    })
+}
 
 const uri = `mongodb+srv://${process.env.DB_User}:${process.env.DB_Pass}@cluster0.lk92epi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
