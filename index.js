@@ -125,6 +125,15 @@ async function run() {
             res.send(result)
         })
 
+        //get rooms for host
+        app.get('/rooms/:email', async (req, res) => {
+            const email = req.params.email
+            const result = await roomsCollection
+                .find({ 'host.email': email })
+                .toArray()
+            res.send(result)
+        })
+
 
 
 
