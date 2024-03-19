@@ -118,6 +118,13 @@ async function run() {
             res.send(result)
         })
 
+        // add a room in database
+        app.post('/rooms', verifyToken, async (req, res) => {
+            const room = req.body
+            const result = await roomsCollection.insertOne(room)
+            res.send(result)
+        })
+
 
 
 
