@@ -105,6 +105,13 @@ async function run() {
             res.send(result)
         })
 
+        // Get user role
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email
+            const result = await usersCollection.findOne({ email })
+            res.send(result)
+        })
+
         // Get all rooms
         app.get('/rooms', async (req, res) => {
             const result = await roomsCollection.find().toArray()
