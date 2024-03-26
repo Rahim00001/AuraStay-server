@@ -53,6 +53,7 @@ async function run() {
     try {
         const usersCollection = client.db('auraStayDB').collection('users')
         const roomsCollection = client.db('auraStayDB').collection('rooms')
+        const bookingsCollection = client.db('auraStayDB').collection('bookings')
 
 
         // auth related api
@@ -153,6 +154,13 @@ async function run() {
                 payment_method_types: ['card'],
             })
             res.send({ clientSecret: client_secret })
+        })
+
+        // Save booking info in booking collection
+        app.post('/bookings', verifyToken, async (req, res) => {
+            const booking = req.body
+            const result = await bookingsCollection.insertOne(booking)
+            res.send(result)
         })
 
 
