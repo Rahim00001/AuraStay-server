@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const morgan = require('morgan');
 const port = process.env.PORT || 5000;
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 
 // middleware
 app.use(cors({
@@ -141,7 +142,18 @@ async function run() {
             res.send(result)
         })
 
-
+        // Generate client secret for stripe payment
+        app.post('/create-payment-intent', verifyToken, async (req, res) => {
+            const { price } = req.body
+            const amount = parseInt(price * 100)
+            if (!price || amount < 1) return
+            const { client_secret } = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: 'usd',
+                payment_method_types: ['card'],
+            })
+            res.send({ clientSecret: client_secret })
+        })
 
 
 
