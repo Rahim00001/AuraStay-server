@@ -66,6 +66,16 @@ async function run() {
             next()
         }
 
+        // Hosts verification middleware
+        const verifyHost = async (req, res, next) => {
+            const user = req.user
+            const query = { email: user?.email }
+            const result = await usersCollection.findOne(query)
+            if (!result || result?.role !== 'host')
+                return res.status(401).send({ message: 'unauthorized access' })
+            next()
+        }
+
         // auth related api
         app.post('/jwt', async (req, res) => {
             const user = req.body;
