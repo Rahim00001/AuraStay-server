@@ -55,6 +55,16 @@ async function run() {
         const roomsCollection = client.db('auraStayDB').collection('rooms')
         const bookingsCollection = client.db('auraStayDB').collection('bookings')
 
+        // Admin Verification middleware
+        const verifyAdmin = async (req, res, next) => {
+            const user = req.user
+            console.log('user from verify admin', user)
+            const query = { email: user?.email }
+            const result = await usersCollection.findOne(query)
+            if (!result || result?.role !== 'admin')
+                return res.status(401).send({ message: 'unauthorized access' })
+            next()
+        }
 
         // auth related api
         app.post('/jwt', async (req, res) => {
@@ -209,7 +219,7 @@ async function run() {
         })
 
         // Get all users
-        app.get('/users', verifyToken, async (req, res) => {
+        app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
             const result = await usersCollection.find().toArray()
             res.send(result)
         })
