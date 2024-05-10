@@ -168,7 +168,7 @@ async function run() {
         })
 
         //get rooms for host
-        app.get('/rooms/:email', async (req, res) => {
+        app.get('/rooms/:email', verifyToken, verifyHost, async (req, res) => {
             const email = req.params.email
             const result = await roomsCollection
                 .find({ 'host.email': email })
@@ -220,7 +220,7 @@ async function run() {
         })
 
         // Get all bookings for host
-        app.get('/bookings/host', verifyToken, async (req, res) => {
+        app.get('/bookings/host', verifyToken, verifyHost, async (req, res) => {
             const email = req.query.email
             if (!email) return res.send([])
             const query = { host: email }
