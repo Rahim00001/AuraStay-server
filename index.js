@@ -132,7 +132,6 @@ async function run() {
                 .send({ success: true })
         })
 
-
         // Logout
         app.get('/logout', async (req, res) => {
             try {
@@ -266,6 +265,14 @@ async function run() {
             if (!email) return res.send([])
             const query = { host: email }
             const result = await bookingsCollection.find(query).toArray()
+            res.send(result)
+        })
+
+        // delete a booking
+        app.delete('/bookings/:id', verifyToken, async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await bookingsCollection.deleteOne(query)
             res.send(result)
         })
 
