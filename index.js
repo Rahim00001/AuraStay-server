@@ -207,6 +207,28 @@ async function run() {
             res.send(result)
         })
 
+        // Update A room
+        app.put('/rooms/:id', verifyToken, async (req, res) => {
+            const room = req.body
+            console.log(room)
+
+            const filter = { _id: new ObjectId(req.params.id) }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: room,
+            }
+            const result = await roomsCollection.updateOne(filter, updateDoc, options)
+            res.send(result)
+        })
+
+        // delete a room
+        app.delete('/rooms/:id', verifyToken, async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await roomsCollection.deleteOne(query)
+            res.send(result)
+        })
+
         //get rooms for host
         app.get('/rooms/:email', verifyToken, verifyHost, async (req, res) => {
             const email = req.params.email
