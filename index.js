@@ -8,6 +8,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const morgan = require('morgan');
 const port = process.env.PORT || 5000;
 const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
+const nodemailer = require('nodemailer')
 
 // middleware
 app.use(cors({
@@ -36,6 +37,46 @@ const verifyToken = async (req, res, next) => {
         console.log('value in the token:', decoded)
         req.user = decoded;
         next();
+    })
+}
+
+
+// Send email
+const sendEmail = (emailAddress, emailData) => {
+    //Create a transporter
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: process.env.MAIL,
+            pass: process.env.PASS,
+        },
+    })
+
+    //verify connection
+    transporter.verify((error, success) => {
+        if (error) {
+            console.log(error)
+        } else {
+            console.log('Server is ready to take our emails', success)
+        }
+    })
+
+    const mailBody = {
+        from: process.env.MAIL,
+        to: emailAddress,
+        subject: emailData?.subject,
+        html: `<p>${emailData?.message}</p>`,
+    }
+
+    transporter.sendMail(mailBody, (error, info) => {
+        if (error) {
+            console.log(error)
+        } else {
+            console.log('Email sent: ' + info.response)
+        }
     })
 }
 
