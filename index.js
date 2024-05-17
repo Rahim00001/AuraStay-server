@@ -320,7 +320,7 @@ async function run() {
             res.send(result)
         })
 
-        // Admin Stat Data
+        // Admin Statistics
         app.get('/admin-stat', verifyToken, verifyAdmin, async (req, res) => {
             const bookingsDetails = await bookingsCollection
                 .find({}, { projection: { date: 1, price: 1 } })
